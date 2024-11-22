@@ -14,9 +14,11 @@ def generate_tags(title: str, body: str, tags: list):
     """
     Generate tags for a given question using a language model.
     """
-    model = load_llm("qwen2.5:3b")
+    model = load_llm("llama3.2:3b")
     query = tagging_prompt(title, body, tags)
     tags = model.invoke(query)
-    tags = literal_eval(tags.content)
+    tags = literal_eval(tags)
+    for i,tag in enumerate(tags):
+        tags[i] = tag.lower().strip()
     logger.info(f"Generated tags: {tags} for question: {title}")
     return tags
