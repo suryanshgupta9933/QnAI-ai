@@ -1,6 +1,7 @@
 # Importing Dependencies
 import os
 import logging
+from ast import literal_eval
 
 from utils.llm import load_llm
 from utils.prompts import tagging_prompt
@@ -13,16 +14,9 @@ def generate_tags(title: str, body: str, tags: list):
     """
     Generate tags for a given question using a language model.
     """
-    model = load_llm()
-    prompt = tagging_prompt(title, body, tags)
-    chain = prompt | model
-    tags = chain.invoke(
-        {
-            "title": title,
-            "body": body,
-            "tags": tags
-        }
-    )
+    model = load_llm("qwen2.5:3b")
+    query = tagging_prompt(title, body, tags)
+    tags = model.invoke(query)
+    tags = literal_eval(tags.content)
     logger.info(f"Generated tags: {tags} for question: {title}")
     return tags
-    
